@@ -20,9 +20,11 @@ from slowapi.util import get_remote_address
 from app.api.routes import (
     admin,
     eligibility,
+    notifications,
     opportunities,
     recommendations,
     roadmap,
+    saved,
     teams,
     trust,
     users,
@@ -172,18 +174,34 @@ api_v1.include_router(roadmap.router)
 api_v1.include_router(teams.teams_router)
 api_v1.include_router(teams.planner_router)
 api_v1.include_router(users.router)
+api_v1.include_router(saved.router)
+api_v1.include_router(notifications.router)
 api_v1.include_router(admin.router)
 
 
 @app.get("/api/v1/health")
 async def health_check():
     """System health endpoint."""
+    from app.services.gemini_service import get_gemini_status
     return {
         "status": "healthy",
+        "version": settings.app_version,
         "services": {
-            "database": "healthy" if settings.has_supabase else "not_configured (demo mode)",
-            "gemini": "healthy" if settings.has_gemini else "not_configured",
-        }
+            "database": "connected" if settings.has_supabase else "demo_mode (no Supabase configured)",
+            "gemini": get_gemini_status(),
+        },
+        "endpoints": [
+            "/api/v1/opportunities",
+            "/api/v1/recommendations",
+            "/api/v1/eligibility/{opp_id}",
+            "/api/v1/trust/{opp_id}",
+            "/api/v1/roadmap",
+            "/api/v1/teams",
+            "/api/v1/profile",
+            "/api/v1/saved",
+            "/api/v1/notifications",
+            "/api/v1/admin",
+        ]
     }
 
 

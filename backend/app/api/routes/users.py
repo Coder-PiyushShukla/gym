@@ -4,9 +4,9 @@ DISHA User Profile API Routes.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
-from app.api.dependencies import get_demo_user, get_user_id_or_demo
+from app.api.dependencies import get_demo_user, get_user_id_or_demo, update_user_profile
 from app.schemas.common import ApiResponse
 from app.schemas.user import ProfileResponse, StudentProfileUpdate
 from app.services.seed_data import DEMO_STUDENT_PROFILE
@@ -48,15 +48,18 @@ async def get_profile(user: dict = Depends(get_demo_user)):
 @router.put("", response_model=ApiResponse)
 async def update_profile(
     update: StudentProfileUpdate,
+    request: Request,
     user: dict = Depends(get_demo_user),
 ):
-    """Update the current user's profile."""
+    """Update the current user's profile. Changes persist for the session."""
     rid = generate_request_id()
 
-    # In demo mode, update the in-memory profile
     update_data = update.model_dump(exclude_none=True)
-    user.update(update_data)
+    user_id = user.get("user_id", "demo-user-001")
 
-    logger.info("profile_updated", request_id=rid, fields=list(update_data.keys()))
+    # Persist update in the in-memory store (keyed by user_id)
+    update_user_profile(user_id, update_data)
+
+    logger.info("profile_updated", request_id=rid, user_id=user_id, fields=list(update_data.keys()))
 
     return ApiResponse.ok(data={"updated_fields": list(update_data.keys())}, request_id=rid)
