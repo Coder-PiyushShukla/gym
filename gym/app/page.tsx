@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from "recharts";
 import {
   LayoutDashboard,
   Compass,
@@ -101,9 +102,22 @@ const exploreData = [
 ];
 
 export default function DishaPrototype() {
-  const [activeTab, setActiveTab] = useState("Dashboard");
+  const [activeTab, setActiveTab] = useState("Landing");
   const [selectedView, setSelectedView] = useState("Main");
+  const [onboardingStep, setOnboardingStep] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState<"none" | "trust" | "roadmap" | "evidence">("none");
+  const [authMode, setAuthMode] = useState("login");
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  
+  const [userName, setUserName] = useState("Piyush Shukla");
+  const [userInitials, setUserInitials] = useState("PS");
+  
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(['Python', 'Java', 'Machine Learning']);
+  const [prefFormat, setPrefFormat] = useState<string[]>(['Remote']);
+  const [prefType, setPrefType] = useState<string[]>(['Hackathons']);
+  const [prefAvailability, setPrefAvailability] = useState<string>('Weekends');
+  const [prefFree, setPrefFree] = useState<boolean>(true);
+  const [prefSustainable, setPrefSustainable] = useState<boolean>(true);
 
   const navItems = [
     { name: "Dashboard", icon: LayoutDashboard },
@@ -555,6 +569,539 @@ export default function DishaPrototype() {
     </motion.div>
   );
 
+  const renderMyOpportunities = () => (
+    <motion.div
+      key="my-opps"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-8"
+    >
+      <div className="flex gap-4 mb-6 border-b border-panel pb-4">
+        <button className="text-primary font-medium border-b-2 border-primary pb-4 -mb-4">Saved (4)</button>
+        <button className="text-textSub hover:text-textMain pb-4 -mb-4 transition-colors">Applied (2)</button>
+        <button className="text-textSub hover:text-textMain pb-4 -mb-4 transition-colors">Completed (1)</button>
+      </div>
+      <div className="grid grid-cols-2 gap-6">
+        {exploreData.map(opp => (
+          <div key={opp.id + "-saved"} className="bg-panel border border-panel rounded-lg p-6 relative">
+             <div className="flex justify-between items-start mb-2">
+               <h3 className="text-lg font-medium text-textMain">{opp.title}</h3>
+               <button className="text-textSub hover:text-risk transition-colors"><Trash2 size={16}/></button>
+             </div>
+             <p className="text-sm text-textSub mb-4">{opp.organizer}</p>
+             <div className="flex items-center gap-4 text-sm text-textSub">
+               <span className="flex items-center gap-1"><Clock size={14}/> Deadline: {opp.deadline}</span>
+               <span className="flex items-center gap-1 text-primary"><Zap size={14}/> 1 pending task</span>
+             </div>
+             <div className="mt-4 flex gap-2">
+               <button className="flex-1 bg-primary text-white text-sm py-2 rounded">Apply Now</button>
+             </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+
+  const renderLearningJourney = () => (
+    <motion.div
+      key="learning"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-8 max-w-4xl"
+    >
+      <div className="bg-panel border border-panel rounded-lg p-6 flex justify-between items-center">
+        <div>
+           <h3 className="text-xl text-textMain">AI/ML Engineer Path</h3>
+           <p className="text-sm text-textSub">Level: Intermediate • 3 Active Goals</p>
+        </div>
+        <div className="text-right">
+           <div className="text-2xl font-light text-success">65%</div>
+           <div className="text-xs text-textSub">Career Readiness</div>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        <h4 className="text-sm uppercase tracking-widest text-textSub">Current Focus Areas</h4>
+        
+        <div className="bg-panel border border-primary/30 rounded-lg p-5">
+           <div className="flex justify-between items-center mb-2">
+             <span className="text-primary font-medium flex items-center gap-2"><Target size={16}/> Model Deployment</span>
+             <span className="text-sm text-textSub">2/3 Completed</span>
+           </div>
+           <div className="h-1.5 bg-base rounded-full overflow-hidden mb-4">
+             <div className="h-full bg-primary w-2/3"></div>
+           </div>
+           <div className="space-y-2 pl-6 border-l-2 border-base">
+             <div className="text-sm text-textSub flex items-center gap-2"><CheckCircle2 size={14} className="text-success"/> Learn Docker Basics</div>
+             <div className="text-sm text-textSub flex items-center gap-2"><CheckCircle2 size={14} className="text-success"/> Build FastAPI Wrapper</div>
+             <div className="text-sm text-textMain flex items-center gap-2"><Clock size={14} className="text-primary"/> Deploy on Render <button className="ml-auto text-xs bg-base px-2 py-1 rounded">Continue</button></div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const renderTrustEvidence = () => (
+    <motion.div
+      key="trust-main"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-8 max-w-4xl"
+    >
+      <div className="grid grid-cols-3 gap-6">
+        <div className="bg-panel border border-panel rounded-lg p-6">
+          <div className="text-3xl font-light text-secondary mb-1">94%</div>
+          <div className="text-sm text-textSub">Average Platform Trust</div>
+        </div>
+        <div className="bg-panel border border-panel rounded-lg p-6">
+          <div className="text-3xl font-light text-textMain mb-1">142</div>
+          <div className="text-sm text-textSub">Sources Verified Today</div>
+        </div>
+        <div className="bg-panel border border-panel rounded-lg p-6">
+          <div className="text-3xl font-light text-risk mb-1">12</div>
+          <div className="text-sm text-textSub">Contradictions Flagged</div>
+        </div>
+      </div>
+      
+      <div className="bg-panel border border-panel rounded-lg p-6">
+        <h3 className="text-lg font-medium text-textMain mb-4 flex items-center gap-2"><ShieldCheck className="text-secondary"/> Global Verification Log</h3>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center py-3 border-b border-base">
+            <div>
+              <div className="text-sm text-textMain font-medium">Contradiction Detected: HackNY 2026</div>
+              <div className="text-xs text-textSub mt-1">Source A (Oct 10) differs from Source B (Oct 12). Trust score penalized by 15.</div>
+            </div>
+            <span className="text-xs px-2 py-1 bg-risk/10 text-risk rounded">Flagged</span>
+          </div>
+          <div className="flex justify-between items-center py-3 border-b border-base">
+            <div>
+              <div className="text-sm text-textMain font-medium">Canonical Merge: Web3 Summit</div>
+              <div className="text-xs text-textSub mt-1">Deduplication engine merged 3 identical listings into one canonical source.</div>
+            </div>
+            <span className="text-xs px-2 py-1 bg-secondary/10 text-secondary rounded">Merged</span>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const renderProfile = () => {
+    if (isEditingProfile) {
+      return (
+        <motion.div key="profile-edit" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8 max-w-4xl">
+          <div className="flex justify-between items-center mb-6 border-b border-panel pb-6">
+             <div>
+                <h2 className="text-2xl font-light text-textMain">Edit Profile & Priorities</h2>
+                <p className="text-textSub mt-1">Update your AI matching preferences.</p>
+             </div>
+             <div className="flex gap-3">
+               <button onClick={() => setIsEditingProfile(false)} className="px-4 py-2 border border-panel text-textSub hover:text-textMain rounded transition-colors text-sm">Cancel</button>
+               <button onClick={() => setIsEditingProfile(false)} className="px-4 py-2 bg-primary text-white rounded transition-colors text-sm shadow-[0_0_15px_rgba(193,59,42,0.3)]">Save Changes</button>
+             </div>
+          </div>
+          
+          <div className="space-y-6">
+             <div className="bg-panel border border-panel rounded-lg p-6">
+                <h3 className="text-sm uppercase tracking-widest text-textSub mb-4">Interests & Skills</h3>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {['Python', 'Java', 'React', 'Machine Learning'].map(skill => (
+                    <span key={skill} className="px-3 py-1.5 bg-success/10 border border-success/20 text-success rounded flex items-center gap-2 text-sm">{skill} <X size={14} className="cursor-pointer"/></span>
+                  ))}
+                  <button className="px-3 py-1.5 bg-base border border-panel text-textSub hover:text-textMain rounded text-sm flex items-center gap-1"><Plus size={14}/> Add Skill</button>
+                </div>
+             </div>
+
+             <div className="bg-panel border border-panel rounded-lg p-6">
+                <h3 className="text-sm uppercase tracking-widest text-textSub mb-4">Matching Priorities</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-textSub block mb-2">Preferred Format</label>
+                    <select className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors">
+                      <option>Remote / Online</option>
+                      <option>In-Person</option>
+                      <option>Hybrid</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-textSub block mb-2">Availability</label>
+                    <select className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors">
+                      <option>Weekends</option>
+                      <option>Evenings</option>
+                      <option>Flexible</option>
+                    </select>
+                  </div>
+                </div>
+             </div>
+          </div>
+        </motion.div>
+      );
+    }
+
+    return (
+    <motion.div
+      key="profile-main"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      className="space-y-8 max-w-4xl"
+    >
+      <div className="flex items-end justify-between">
+        <div className="flex items-center gap-6">
+          <div className="w-24 h-24 rounded-xl bg-panel border-2 border-primary/30 flex items-center justify-center text-4xl text-secondary font-light">
+            {userInitials}
+          </div>
+          <div>
+            <h2 className="text-2xl font-medium text-textMain">{userName}</h2>
+            <p className="text-textSub">2nd Year Computer Science Engineering</p>
+            <div className="flex gap-2 mt-2">
+              <span className="px-2 py-1 bg-base border border-panel rounded text-xs text-textSub flex items-center gap-1"><MapPin size={12}/> Bangalore, India</span>
+              <span className="px-2 py-1 bg-base border border-panel rounded text-xs text-textSub flex items-center gap-1"><Zap size={12}/> AI/ML Focus</span>
+            </div>
+          </div>
+        </div>
+        <button onClick={() => setIsEditingProfile(true)} className="px-4 py-2 border border-primary/30 text-primary hover:bg-primary/10 rounded transition-colors text-sm">Edit Profile</button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-8">
+        <div className="bg-panel border border-panel rounded-lg p-6">
+          <h3 className="text-sm uppercase tracking-widest text-textSub mb-4">Verified Skills</h3>
+          <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1.5 bg-success/10 border border-success/20 text-success rounded text-sm">Python (Advanced)</span>
+            <span className="px-3 py-1.5 bg-success/10 border border-success/20 text-success rounded text-sm">Java (Intermediate)</span>
+            <span className="px-3 py-1.5 bg-success/10 border border-success/20 text-success rounded text-sm">Basic ML</span>
+            <span className="px-3 py-1.5 bg-base border border-panel text-textSub rounded text-sm">Web Dev</span>
+          </div>
+        </div>
+
+        <div className="bg-panel border border-panel rounded-lg p-6">
+          <h3 className="text-sm uppercase tracking-widest text-textSub mb-4">Discovery Preferences</h3>
+          <ul className="space-y-3">
+            <li className="flex justify-between text-sm"><span className="text-textSub">Budget</span><span className="text-textMain">Free / Low-cost</span></li>
+            <li className="flex justify-between text-sm"><span className="text-textSub">Format</span><span className="text-textMain">Remote / Online</span></li>
+            <li className="flex justify-between text-sm"><span className="text-textSub">Availability</span><span className="text-textMain">Weekends</span></li>
+            <li className="flex justify-between text-sm"><span className="text-textSub">Sustainability</span><span className="text-textMain flex items-center gap-1 text-success"><CheckCircle2 size={14}/> Interested</span></li>
+          </ul>
+        </div>
+      </div>
+    </motion.div>
+    );
+  };
+
+  const renderAuth = () => (
+    <div className="h-screen w-full bg-base text-textMain relative overflow-hidden font-sans flex flex-col items-center justify-center">
+      <div className="noise-overlay opacity-40"></div>
+      
+      <div className="absolute top-8 left-8 flex items-center gap-3 z-20 cursor-pointer" onClick={() => setActiveTab("Landing")}>
+        <div className="w-8 h-8 bg-primary rounded flex items-center justify-center font-bold text-white tracking-widest border border-secondary/30">D</div>
+        <span className="text-xl font-semibold tracking-wide">DISHA</span>
+      </div>
+
+      <div className="w-full max-w-md bg-panel border border-panel rounded-2xl shadow-2xl p-10 z-10 relative">
+        <h2 className="text-3xl font-light text-textMain mb-2">{authMode === 'login' ? 'Welcome Back' : 'Create Account'}</h2>
+        <p className="text-textSub mb-8">{authMode === 'login' ? 'Enter your details to access your portal.' : 'Begin your intelligent discovery journey.'}</p>
+        
+        <div className="space-y-4 mb-6">
+          {authMode === 'register' && (
+             <input type="text" placeholder="Full Name" value={userName} onChange={(e) => {
+               setUserName(e.target.value);
+               const initials = e.target.value.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+               setUserInitials(initials || "U");
+             }} className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors" />
+          )}
+          <input type="email" placeholder="Email Address" className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors" />
+          <input type="password" placeholder="Password" className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors" />
+        </div>
+
+        <button 
+          onClick={() => setActiveTab(authMode === 'register' ? "Onboarding" : "Dashboard")}
+          className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded font-medium flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(193,59,42,0.3)] mb-4"
+        >
+          {authMode === 'login' ? 'Sign In' : 'Sign Up'} <ArrowRight size={18} />
+        </button>
+
+        <p className="text-sm text-textSub text-center mt-6">
+          {authMode === 'login' ? "Don't have an account? " : "Already have an account? "}
+          <button onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')} className="text-primary hover:underline font-medium">
+            {authMode === 'login' ? 'Register' : 'Sign In'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderLanding = () => (
+    <div className="h-screen w-full bg-base text-textMain relative overflow-hidden font-sans">
+      <div className="noise-overlay opacity-40"></div>
+      
+      <nav className="absolute top-0 w-full p-8 flex justify-between items-center z-20">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center font-bold text-white tracking-widest border border-secondary/30">
+            D
+          </div>
+          <span className="text-xl font-semibold tracking-wide">DISHA</span>
+        </div>
+        <div className="flex gap-6">
+          <button className="text-sm font-medium text-textSub hover:text-textMain transition-colors">Platform</button>
+          <button className="text-sm font-medium text-textSub hover:text-textMain transition-colors">Trust</button>
+          <button className="text-sm font-medium text-textSub hover:text-textMain transition-colors">Equity</button>
+        </div>
+        <button onClick={() => { setActiveTab("Auth"); setAuthMode("register"); }} className="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded text-sm font-medium shadow-[0_0_20px_rgba(193,59,42,0.3)] transition-all">
+          Build Opportunity Profile
+        </button>
+      </nav>
+
+      <div className="h-full flex items-center justify-center relative z-10 px-10">
+        <div className="max-w-6xl w-full grid grid-cols-2 gap-20 items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/30 rounded-full text-secondary text-xs font-semibold mb-6">
+              <span className="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+              Agentic Intelligence Online
+            </div>
+            <h1 className="text-6xl font-light leading-tight tracking-tight mb-6 text-textMain">
+              Discover opportunities <br/><span className="text-primary font-medium italic">built for your future.</span>
+            </h1>
+            <p className="text-lg text-textSub mb-10 max-w-lg leading-relaxed">
+              Don't make students search for opportunities. Make opportunities intelligently discoverable. Disha verifies, maps, and guides your practical learning journey.
+            </p>
+            <div className="flex gap-4">
+              <button onClick={() => { setActiveTab("Auth"); setAuthMode("register"); }} className="px-8 py-4 bg-primary hover:bg-primary/90 text-white rounded font-medium text-lg flex items-center gap-2 shadow-[0_0_25px_rgba(193,59,42,0.4)] transition-all group">
+                Start Profiling <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+              <button onClick={() => { setActiveTab("Auth"); setAuthMode("login"); }} className="px-8 py-4 bg-panel border border-panel hover:border-textSub text-textMain rounded font-medium text-lg transition-colors">
+                Explore Demo
+              </button>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="relative h-[600px] perspective-1000"
+          >
+            <motion.div 
+              animate={{ rotateY: [0, 5, 0, -5, 0], rotateX: [0, 5, 0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
+              className="absolute inset-0 bg-panel border border-secondary/30 rounded-2xl shadow-2xl p-6 transform-style-3d"
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-6 border-b border-base pb-4">
+                  <div className="text-sm text-textSub uppercase tracking-widest flex items-center gap-2">
+                    <ShieldCheck size={16} className="text-secondary" /> Neural Match Engine
+                  </div>
+                  <div className="text-xs bg-success/10 text-success border border-success/30 px-2 py-1 rounded">Syncing</div>
+                </div>
+                
+                <div className="flex-1 relative">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart cx="50%" cy="50%" outerRadius="80%" data={[
+                      { subject: 'ML Skills', A: 120, fullMark: 150 },
+                      { subject: 'Eligibility', A: 98, fullMark: 150 },
+                      { subject: 'Format Match', A: 86, fullMark: 150 },
+                      { subject: 'Trust Score', A: 99, fullMark: 150 },
+                      { subject: 'SDG Impact', A: 85, fullMark: 150 },
+                      { subject: 'Cost', A: 65, fullMark: 150 },
+                    ]}>
+                      <PolarGrid stroke="#3a3229" />
+                      <PolarAngleAxis dataKey="subject" tick={{ fill: '#9C9184', fontSize: 10 }} />
+                      <PolarRadiusAxis angle={30} domain={[0, 150]} tick={false} axisLine={false} />
+                      <Radar name="Student Match" dataKey="A" stroke="#C13B2A" fill="#C13B2A" fillOpacity={0.4} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                  
+                  <motion.div 
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                    className="absolute top-10 -left-10 bg-panel border border-secondary/40 px-4 py-3 rounded-lg shadow-xl backdrop-blur-md flex items-center gap-3"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center text-secondary"><CheckCircle2 size={16} /></div>
+                    <div>
+                      <div className="text-xs text-textSub">Trust Verification</div>
+                      <div className="text-sm font-medium text-textMain">Score: 92/100</div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div 
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ repeat: Infinity, duration: 5, delay: 1, ease: "easeInOut" }}
+                    className="absolute bottom-20 -right-8 bg-panel border border-primary/40 px-4 py-3 rounded-lg shadow-xl backdrop-blur-md flex items-center gap-3"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary"><Target size={16} /></div>
+                    <div>
+                      <div className="text-xs text-textSub">Skill Gap Found</div>
+                      <div className="text-sm font-medium text-textMain">Docker Deployment</div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderOnboarding = () => (
+    <div className="h-screen w-full bg-base text-textMain relative overflow-hidden font-sans flex flex-col items-center justify-center">
+      <div className="noise-overlay opacity-40"></div>
+      
+      <div className="absolute top-8 left-8 flex items-center gap-3 z-20 cursor-pointer" onClick={() => setActiveTab("Landing")}>
+        <div className="w-8 h-8 bg-primary rounded flex items-center justify-center font-bold text-white tracking-widest border border-secondary/30">D</div>
+        <span className="text-xl font-semibold tracking-wide">DISHA</span>
+      </div>
+
+      <div className="w-full max-w-2xl bg-panel border border-panel rounded-2xl shadow-2xl p-10 z-10 relative">
+        <div className="flex justify-between items-center mb-8">
+          <div className="text-sm text-textSub uppercase tracking-widest">Step {onboardingStep} of 6</div>
+          <div className="flex gap-1">
+            {[1,2,3,4,5,6].map(step => (
+              <div key={step} className={`h-1.5 w-8 rounded-full transition-colors ${step <= onboardingStep ? 'bg-primary' : 'bg-base border border-panel'}`}></div>
+            ))}
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={onboardingStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="min-h-[250px]"
+          >
+            {onboardingStep === 1 && (
+              <div>
+                <h2 className="text-3xl font-light text-textMain mb-2">01. Identity</h2>
+                <p className="text-textSub mb-8">Let's start with the basics. Who are you?</p>
+                <div className="space-y-4">
+                  <input type="text" placeholder="Full Name" value={userName} onChange={(e) => {
+                    setUserName(e.target.value);
+                    const initials = e.target.value.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    setUserInitials(initials || "U");
+                  }} className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors" />
+                  <input type="text" placeholder="Current Year / Education" className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors" defaultValue="2nd Year B.Tech CSE" />
+                </div>
+              </div>
+            )}
+            {onboardingStep === 2 && (
+              <div>
+                <h2 className="text-3xl font-light text-textMain mb-2">02. Skills Matrix</h2>
+                <p className="text-textSub mb-8">What technologies have you worked with?</p>
+                <div className="flex flex-wrap gap-3">
+                  {['Python', 'Java', 'React', 'TypeScript', 'Machine Learning', 'Docker', 'AWS', 'Figma', 'C++'].map(skill => {
+                    const isSelected = selectedSkills.includes(skill);
+                    return (
+                      <div 
+                        key={skill} 
+                        onClick={() => setSelectedSkills(prev => isSelected ? prev.filter(s => s !== skill) : [...prev, skill])}
+                        className={`px-4 py-2 border rounded-lg cursor-pointer transition-colors ${isSelected ? 'bg-secondary/10 border-secondary text-secondary' : 'bg-base border-panel text-textSub hover:border-textMain'}`}>
+                        {skill}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {onboardingStep === 3 && (
+              <div>
+                <h2 className="text-3xl font-light text-textMain mb-2">03. Career Goals</h2>
+                <p className="text-textSub mb-8">What role are you ultimately aiming for?</p>
+                <input type="text" placeholder="e.g. AI/ML Engineer, Full Stack Developer..." className="w-full bg-base border border-panel rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors" defaultValue="AI/ML Engineer" />
+              </div>
+            )}
+            {onboardingStep === 4 && (
+              <div>
+                <h2 className="text-3xl font-light text-textMain mb-2">04. Preferences</h2>
+                <p className="text-textSub mb-8">How do you prefer to learn and participate?</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {['Remote', 'In-Person', 'Hybrid'].map(fmt => (
+                    <div 
+                      key={fmt}
+                      onClick={() => setPrefFormat(prev => prev.includes(fmt) ? prev.filter(f => f !== fmt) : [...prev, fmt])}
+                      className={`rounded-lg p-4 cursor-pointer flex items-center justify-between border transition-colors ${prefFormat.includes(fmt) ? 'bg-secondary/10 border-secondary text-secondary' : 'bg-base border-panel text-textSub hover:border-textMain'}`}>
+                      {fmt} {prefFormat.includes(fmt) && <CheckCircle2 size={16}/>}
+                    </div>
+                  ))}
+                  {['Hackathons', 'Bootcamps'].map(typ => (
+                    <div 
+                      key={typ}
+                      onClick={() => setPrefType(prev => prev.includes(typ) ? prev.filter(t => t !== typ) : [...prev, typ])}
+                      className={`rounded-lg p-4 cursor-pointer flex items-center justify-between border transition-colors ${prefType.includes(typ) ? 'bg-secondary/10 border-secondary text-secondary' : 'bg-base border-panel text-textSub hover:border-textMain'}`}>
+                      {typ} {prefType.includes(typ) && <CheckCircle2 size={16}/>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {onboardingStep === 5 && (
+              <div>
+                <h2 className="text-3xl font-light text-textMain mb-2">05. Availability</h2>
+                <p className="text-textSub mb-8">When do you have time for external opportunities?</p>
+                <div className="flex gap-3">
+                  {['Weekends', 'Evenings', 'Summer'].map(time => (
+                    <div 
+                      key={time}
+                      onClick={() => setPrefAvailability(time)}
+                      className={`flex-1 rounded-lg p-4 text-center cursor-pointer border transition-colors ${prefAvailability === time ? 'bg-secondary/10 border-secondary text-secondary' : 'bg-base border-panel text-textSub hover:border-textMain'}`}>
+                      {time}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {onboardingStep === 6 && (
+              <div>
+                <h2 className="text-3xl font-light text-textMain mb-2">06. Impact & Accessibility</h2>
+                <p className="text-textSub mb-8">Help us apply an equity lens to your recommendations.</p>
+                <div className="space-y-4">
+                  <div onClick={() => setPrefFree(!prefFree)} className="flex justify-between items-center bg-base border border-panel rounded-lg p-4 cursor-pointer hover:border-textMain transition-colors">
+                    <div>
+                      <div className="text-textMain font-medium">Free / Stipend only</div>
+                      <div className="text-xs text-textSub">Prioritize zero-cost opportunities</div>
+                    </div>
+                    <ToggleRight className={`transition-colors ${prefFree ? "text-success" : "text-textSub rotate-180"}`} size={28} />
+                  </div>
+                  <div onClick={() => setPrefSustainable(!prefSustainable)} className="flex justify-between items-center bg-base border border-panel rounded-lg p-4 cursor-pointer hover:border-textMain transition-colors">
+                    <div>
+                      <div className="text-textMain font-medium">Sustainability Focus</div>
+                      <div className="text-xs text-textSub">Prioritize SDG-aligned impact projects</div>
+                    </div>
+                    <ToggleRight className={`transition-colors ${prefSustainable ? "text-success" : "text-textSub rotate-180"}`} size={28} />
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="flex justify-between mt-10 pt-6 border-t border-base">
+          <button 
+            onClick={() => setOnboardingStep(Math.max(1, onboardingStep - 1))}
+            className={`px-6 py-2 text-textSub hover:text-textMain font-medium transition-colors ${onboardingStep === 1 ? 'invisible' : ''}`}
+          >
+            Back
+          </button>
+          <button 
+            onClick={() => {
+              if (onboardingStep < 6) setOnboardingStep(onboardingStep + 1);
+              else setActiveTab("Dashboard");
+            }}
+            className="px-8 py-2 bg-primary hover:bg-primary/90 text-white rounded font-medium flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(193,59,42,0.3)]"
+          >
+            {onboardingStep === 6 ? "Generate Profile" : "Continue"} <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     if (selectedView === "Detail") return renderDetail();
     
@@ -564,20 +1111,17 @@ export default function DishaPrototype() {
       case "Planner": return renderPlanner();
       case "Team Finder": return renderTeamFinder();
       case "Privacy Center": return renderPrivacyCenter();
-      case "My Opportunities": 
-      case "Learning Journey":
-      case "Trust & Evidence":
-      case "Profile":
-        return (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-textSub">
-            <ShieldCheck size={48} className="mb-4 text-panel" />
-            <h2 className="text-xl text-textMain mb-2">{activeTab}</h2>
-            <p>Module integrated into core flow. Navigate via Dashboard or Explore.</p>
-          </div>
-        );
+      case "My Opportunities": return renderMyOpportunities();
+      case "Learning Journey": return renderLearningJourney();
+      case "Trust & Evidence": return renderTrustEvidence();
+      case "Profile": return renderProfile();
       default: return renderDashboard();
     }
   };
+
+  if (activeTab === "Landing") return renderLanding();
+  if (activeTab === "Auth") return renderAuth();
+  if (activeTab === "Onboarding") return renderOnboarding();
 
   return (
     <div className="flex h-screen bg-base text-textMain font-sans overflow-hidden">
@@ -618,10 +1162,10 @@ export default function DishaPrototype() {
           </div>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded bg-panel border border-textSub/30 flex items-center justify-center text-secondary font-bold">
-              AK
+              {userInitials}
             </div>
             <div>
-              <p className="text-sm font-medium">Alex Kumar</p>
+              <p className="text-sm font-medium">{userName}</p>
               <p className="text-xs text-textSub">2nd Year Eng.</p>
             </div>
           </div>
@@ -633,7 +1177,7 @@ export default function DishaPrototype() {
           <div>
             <h1 className="text-2xl font-light tracking-wide">
               {selectedView === "Detail" ? "Opportunity Intelligence" : 
-               activeTab === "Dashboard" ? "Good evening, Alex" : 
+               activeTab === "Dashboard" ? `Good evening, ${userName.split(' ')[0]}` : 
                activeTab}
             </h1>
             <p className="text-sm text-textSub mt-1">

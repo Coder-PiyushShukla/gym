@@ -1,0 +1,8 @@
+node_modules/
+.next/
+gym/node_modules/
+gym/.next/
+build/
+gym/build/
+.env
+.DS_Store
